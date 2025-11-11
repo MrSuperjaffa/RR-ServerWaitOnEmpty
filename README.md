@@ -5,10 +5,13 @@ This plugin also handles disables audio while enables.
 
 The plugin can be disable/enabled at any time.
 
-## Building
-Built in Visual Studio 2022
+## Installation
+Install via Unity Mod Manager.
 
-Add `Railroader\Railroader_Data\Managed` to your Reference Paths
+## Building
+Built in Visual Studio 2022.
+
+Add `Railroader\Railroader_Data\Managed` to your Reference Paths.
 
 ### Requires
 + 0Harmony.dll
