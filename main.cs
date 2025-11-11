@@ -38,19 +38,19 @@ namespace ServerWaitOnEmpty
 
         private static void OnPlayersDidChange(PlayersDidChange message)
         {
-            Debug.Log("OnPlayersDidChange called");
+            //Debug.Log("OnPlayersDidChange called");
             CheckStatus();
         }
 
         private static void OnTimeChanged(TimeMinuteDidChange message)
         {
-            Debug.Log("OnTimeChanged called");
+            //Debug.Log("OnTimeChanged called");
             CheckStatus();
         }
 
         private static void OnMapDidLoad(MapDidLoadEvent message)
         {
-            Debug.Log("OnMapDidLoad called");
+            //Debug.Log("OnMapDidLoad called");
             CheckStatus();
         }
 
@@ -58,28 +58,33 @@ namespace ServerWaitOnEmpty
         {
             if (Multiplayer.Mode != ConnectionMode.MultiplayerServer)
             {
-                Debug.Log("Client is not server host");
+                //Debug.Log("Client is not server host");
                 return;
             }
 
-            var manager = UnityEngine.Object.FindObjectOfType<Game.State.PlayersManager>();
+            
+
+            var PlayerManager = UnityEngine.Object.FindObjectOfType<Game.State.PlayersManager>();
             int count = 0;
-            if (manager != null)
+            if (PlayerManager != null)
             {
-                foreach (var p in manager.RemotePlayers)
+                foreach (var p in PlayerManager.RemotePlayers)
                 {
                     count++;
                 }
                 Debug.Log("Remote Players: " + count.ToString());
             }
 
-            if (count <= 0)
+            bool isEmpty = (count == 0);
+            bool isPaused = (Time.timeScale == 0f);
+
+            if (isEmpty && !isPaused)
             {
                 SetPaused(true);
                 Debug.Log("No Players - Game Paused");
                 global::Console.Log("No Players - Game Paused");
             }
-            else
+            else if (!isEmpty && isPaused)
             {
                 SetPaused(false);
                 Debug.Log("Unpausing");
@@ -91,6 +96,35 @@ namespace ServerWaitOnEmpty
         {
             Time.timeScale = paused ? 0f : 1f;
             AudioListener.volume = 0f;
+
+            if (paused)
+            {
+                TriggerAutosave();
+            }
+        }
+
+        private static void TriggerAutosave()
+        {
+            var SaveManager = UnityEngine.Object.FindObjectOfType<Game.State.SaveManager>();
+            if (SaveManager == null)
+            {
+                Debug.Log("SaveManager not found!");
+                return;
+            }
+
+            var method = typeof(Game.State.SaveManager).GetMethod(
+                "Autosave",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance
+            );
+
+            if (method == null)
+            {
+                Debug.Log("Autosave() method not found!");
+            }
+
+            method.Invoke(SaveManager, null);
+
+            Debug.Log("Autosave triggered!");
         }
     }
 }
