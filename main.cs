@@ -62,11 +62,13 @@ namespace ServerWaitOnEmpty
                 return;
             }
 
-            var manager = UnityEngine.Object.FindObjectOfType<Game.State.PlayersManager>();
+            
+
+            var PlayerManager = UnityEngine.Object.FindObjectOfType<Game.State.PlayersManager>();
             int count = 0;
-            if (manager != null)
+            if (PlayerManager != null)
             {
-                foreach (var p in manager.RemotePlayers)
+                foreach (var p in PlayerManager.RemotePlayers)
                 {
                     count++;
                 }
@@ -91,6 +93,35 @@ namespace ServerWaitOnEmpty
         {
             Time.timeScale = paused ? 0f : 1f;
             AudioListener.volume = 0f;
+
+            if (paused)
+            {
+                TriggerAutosave();
+            }
+        }
+
+        private static void TriggerAutosave()
+        {
+            var SaveManager = UnityEngine.Object.FindObjectOfType<Game.State.SaveManager>();
+            if (SaveManager == null)
+            {
+                Debug.Log("SaveManager not found!");
+                return;
+            }
+
+            var method = typeof(Game.State.SaveManager).GetMethod(
+                "Autosave",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance
+            );
+
+            if (method == null)
+            {
+                Debug.Log("Autosave() method not found!");
+            }
+
+            method.Invoke(SaveManager, null);
+
+            Debug.Log("Autosave triggered!");
         }
     }
 }
