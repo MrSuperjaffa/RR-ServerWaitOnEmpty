@@ -1,0 +1,9 @@
+{
+  "Id": "ServerWaitOnEmpty",
+  "DisplayName": "Server Wait On Empty",
+  "Author": "Jaffa",
+  "Version": "1.0.0",
+  "AssemblyName": "ServerWaitOnEmpty.dll",
+  "EntryMethod": "ServerWaitOnEmpty.PlayerWatch.Load",
+  "HomePage": "https://www.nexusmods.com/railroader/mods/1046"
+}

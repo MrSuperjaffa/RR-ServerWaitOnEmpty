@@ -38,19 +38,19 @@ namespace ServerWaitOnEmpty
 
         private static void OnPlayersDidChange(PlayersDidChange message)
         {
-            Debug.Log("OnPlayersDidChange called");
+            //Debug.Log("OnPlayersDidChange called");
             CheckStatus();
         }
 
         private static void OnTimeChanged(TimeMinuteDidChange message)
         {
-            Debug.Log("OnTimeChanged called");
+            //Debug.Log("OnTimeChanged called");
             CheckStatus();
         }
 
         private static void OnMapDidLoad(MapDidLoadEvent message)
         {
-            Debug.Log("OnMapDidLoad called");
+            //Debug.Log("OnMapDidLoad called");
             CheckStatus();
         }
 
@@ -58,7 +58,7 @@ namespace ServerWaitOnEmpty
         {
             if (Multiplayer.Mode != ConnectionMode.MultiplayerServer)
             {
-                Debug.Log("Client is not server host");
+                //Debug.Log("Client is not server host");
                 return;
             }
 
@@ -75,13 +75,16 @@ namespace ServerWaitOnEmpty
                 Debug.Log("Remote Players: " + count.ToString());
             }
 
-            if (count <= 0)
+            bool isEmpty = (count == 0);
+            bool isPaused = (Time.timeScale == 0f);
+
+            if (isEmpty && !isPaused)
             {
                 SetPaused(true);
                 Debug.Log("No Players - Game Paused");
                 global::Console.Log("No Players - Game Paused");
             }
-            else
+            else if (!isEmpty && isPaused)
             {
                 SetPaused(false);
                 Debug.Log("Unpausing");
